@@ -1,0 +1,10 @@
+*.elf
+*.o
+*.bin
+host-test
+service-host-test
+app/.native-build/
+app/dist/
+__pycache__/
+*.pyc
+release/
