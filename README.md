@@ -6,6 +6,12 @@ Native PS5 application for reading and saving the persistent EMC error log on
 The application boots into a native OpenGL interface. It does not touch the EMC
 reader until **X** is pressed. **Circle** exits cleanly to the PS5 home screen.
 
+The release is a self-contained installable title, but it has a runtime
+dependency on an already-running `elfldr` service. No PC-side transfer is
+needed after installation: the title sends its bundled reader internally over
+the PS5's existing `127.0.0.1:9021` loopback connection. It does not create the
+loopback interface or start `elfldr` itself.
+
 ## How it works
 
 The project has two deliberately separate parts:
@@ -14,9 +20,11 @@ The project has two deliberately separate parts:
    reads the controller, enforces one attempt per app session, and displays the
    final status. Merely opening the title does not issue an EMC command.
 2. When X is pressed, the application sends its bundled `emc-reader.elf` to the
-   already-running local `elfldr` service on port 9021. The firmware-specific
-   reader performs one ICC service-2, command-7 request and restores its
-   temporary hooks and mappings before reporting success.
+   already-running local `elfldr` service at `127.0.0.1:9021`. This transfer
+   remains entirely inside the PS5; it is not sent to a PC or another network
+   device. The firmware-specific reader performs one ICC service-2, command-7
+   request and restores its temporary hooks and mappings before reporting
+   success.
 
 The response is exactly 2,020 bytes: a four-byte little-endian header followed
 by 63 records of eight little-endian 32-bit words. The reader preserves those
